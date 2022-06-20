@@ -13,4 +13,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt --default-timeout=1000
 
 COPY . .
-# ENTRYPOINT ["sh", "/code/entrypoint.sh"]
+
+RUN chmod u+x ./entrypoint.sh
+
+ENTRYPOINT ["sh", "/code/entrypoint.sh"]

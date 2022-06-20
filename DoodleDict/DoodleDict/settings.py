@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from .guess import pred_b64_img as PREDICT_B64 # our ML model
+from .guess import pred_b64_img as PREDICT_B64  # our ML model
 from pathlib import Path
 import os
 
@@ -21,11 +21,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 UNSPLASH_ACCESS_KEY = os.getenv('UNSPLASH_ACCESS_KEY')
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['1509.ddns.net', '*']
+ALLOWED_HOSTS = ['*']
 
-import os
-PROJECT_DIR=os.path.dirname(__file__)
-TMP_DIR = os.path.join( os.path.abspath( os.path.join(PROJECT_DIR, '..')), 'tmp' )
+PROJECT_DIR = os.path.dirname(__file__)
+TMP_DIR = os.path.join(os.path.abspath(os.path.join(PROJECT_DIR, '..')), 'tmp')
 
 # GEO2 Lite Database Path
 MAXMIND_DB = os.path.join(BASE_DIR, 'GeoLite2DB/maxmind4.dat')

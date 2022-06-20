@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(myapp LANGUAGES CXX)
+project(frontend LANGUAGES CXX)
 
-set(BINARY_NAME "myapp")
+set(BINARY_NAME "frontend")
 
 cmake_policy(SET CMP0063 NEW)
 

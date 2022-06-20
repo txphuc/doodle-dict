@@ -1,4 +1,4 @@
-# myapp
+# frontend
 
 A new Flutter project.
 

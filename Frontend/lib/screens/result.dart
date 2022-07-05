@@ -5,6 +5,7 @@ import 'package:myapp/model/server_result.dart';
 import 'package:myapp/controller/base64_conver.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'dart:developer' as developer;
+import 'package:flutter_tts/flutter_tts.dart';
 
 class Result extends StatefulWidget {
   const Result({Key? key, required this.item}) : super(key: key);
@@ -16,6 +17,16 @@ class Result extends StatefulWidget {
 
 class _ResultState extends State<Result> {
   String _displayText = 'Loading...';
+  String _language = 'en-US';
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  speak(String text, String language) async {
+    await flutterTts.setLanguage(language);
+    await flutterTts.setPitch(1);
+    await flutterTts.speak(text);
+  }
+
   SpeedDial buildSpeedDial() {
     return SpeedDial(
       animatedIcon: AnimatedIcons.menu_close,
@@ -43,9 +54,15 @@ class _ResultState extends State<Result> {
           onTap: () => {
             setState(() {
               _displayText = widget.item.lsWord['ru'];
+              _language = 'ru';
+              speak(
+                  _displayText == 'Loading...'
+                      ? widget.item.name
+                      : _displayText,
+                  _language);
             })
           },
-          label: 'Rusian',
+          label: 'Russian',
           labelStyle:
               const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
           labelBackgroundColor: Colors.blue,
@@ -56,6 +73,12 @@ class _ResultState extends State<Result> {
           onTap: () => {
             setState(() {
               _displayText = widget.item.lsWord['fr'];
+              _language = 'fr';
+              speak(
+                  _displayText == 'Loading...'
+                      ? widget.item.name
+                      : _displayText,
+                  _language);
             })
           },
           label: 'French',
@@ -69,6 +92,12 @@ class _ResultState extends State<Result> {
           onTap: () => {
             setState(() {
               _displayText = widget.item.lsWord['ja'];
+              _language = 'ja';
+              speak(
+                  _displayText == 'Loading...'
+                      ? widget.item.name
+                      : _displayText,
+                  _language);
             })
           },
           label: 'Japanese',
@@ -82,6 +111,12 @@ class _ResultState extends State<Result> {
           onTap: () => {
             setState(() {
               _displayText = widget.item.lsWord['vi'];
+              _language = 'vi';
+              speak(
+                  _displayText == 'Loading...'
+                      ? widget.item.name
+                      : _displayText,
+                  _language);
             })
           },
           label: 'Vietnamese',
@@ -95,9 +130,15 @@ class _ResultState extends State<Result> {
           onTap: () => {
             setState(() {
               _displayText = widget.item.lsWord['en'];
+              _language = 'en-US';
+              speak(
+                  _displayText == 'Loading...'
+                      ? widget.item.name
+                      : _displayText,
+                  _language); 
             })
           },
-          label: 'Enlish',
+          label: 'English',
           labelStyle:
               const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
           labelBackgroundColor: Colors.blue,
@@ -132,22 +173,30 @@ class _ResultState extends State<Result> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(children: [
-                TextSpan(
-                  text: _displayText == 'Loading...'
-                      ? widget.item.name
-                      // ? "pусский язык"
-                      : _displayText,
-                  style: const TextStyle(
-                    fontSize: 50.0,
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w600,
-                  ),
+            child: InkWell(
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(children: [
+                    TextSpan(
+                      text: _displayText == 'Loading...'
+                          ? widget.item.name
+                          // ? "pусский язык"
+                          : _displayText,
+                      style: const TextStyle(
+                        fontSize: 50.0,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ]),
                 ),
-              ]),
-            ),
+                onTap: () => {
+                      speak(
+                          _displayText == 'Loading...'
+                              ? widget.item.name
+                              : _displayText,
+                          _language)
+                    }),
           ),
           CarouselSlider(
             items: widget.item.lsImage

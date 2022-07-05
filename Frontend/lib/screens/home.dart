@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:myapp/controller/history_storage.dart';
-// import 'package:painter/painter.dart';
 import 'package:myapp/screens/sidebar.dart';
 import 'package:myapp/model/server_result.dart';
 import 'dart:async';
@@ -12,6 +12,9 @@ import 'package:myapp/model/items.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/controller/base64_conver.dart';
 import 'package:myapp/screens/painter.dart';
+import 'package:image/image.dart' as img;
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -39,6 +42,58 @@ class _HomePageState extends State<HomePage> {
     } else {
       throw Exception('Failed to create ServerResult.');
     }
+  }
+
+  Future pickImage() async {
+    try {
+      final ImagePicker _picker = ImagePicker();
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+      final bytes = await XFile(image.path).readAsBytes();
+      String base64Image = base64String(bytes);
+      ServerResult serverResult = await createServerResult(base64Image);
+      final df = DateFormat('dd-MM-yyyy hh:mm:ss a');
+      String mean = serverResult.word['en'];
+      HistoryItem item = HistoryItem(
+        name: mean,
+        image: base64Image,
+        created: df.format(DateTime.now()).toString(),
+        lsImage: serverResult.img,
+        lsWord: serverResult.word,
+      );
+      writeHistory(item);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Result(item: item),
+          ));
+    } on PlatformException catch (e) {}
+  }
+
+  Future cameraImage() async {
+    try {
+      final ImagePicker _picker = ImagePicker();
+      final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+      if (image == null) return;
+      final bytes = await XFile(image.path).readAsBytes();
+      String base64Image = base64String(bytes);
+      ServerResult serverResult = await createServerResult(base64Image);
+      final df = DateFormat('dd-MM-yyyy hh:mm:ss a');
+      String mean = serverResult.word['en'];
+      HistoryItem item = HistoryItem(
+        name: mean,
+        image: base64Image,
+        created: df.format(DateTime.now()).toString(),
+        lsImage: serverResult.img,
+        lsWord: serverResult.word,
+      );
+      writeHistory(item);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Result(item: item),
+          ));
+    } on PlatformException catch (e) {}
   }
 
   @override
@@ -99,53 +154,82 @@ class _HomePageState extends State<HomePage> {
       ];
     }
     return Scaffold(
-      backgroundColor: Colors.grey[200],
-      drawer: const Sidebar(),
-      appBar: AppBar(
-          title: const Text('Painter'),
-          actions: actions,
-          bottom: PreferredSize(
-            child: DrawBar(_controller),
-            preferredSize: Size(MediaQuery.of(context).size.width, 30.0),
-          )),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8),
-          child: AspectRatio(aspectRatio: 1.0, child: Painter(_controller)),
+        backgroundColor: Colors.grey[200],
+        drawer: const Sidebar(),
+        appBar: AppBar(
+            title: const Text('Painter'),
+            actions: actions,
+            bottom: PreferredSize(
+              child: DrawBar(_controller),
+              preferredSize: Size(MediaQuery.of(context).size.width, 30.0),
+            )),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: AspectRatio(aspectRatio: 1.0, child: Painter(_controller)),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          PainterController temp = PainterController.clone(_controller);
-          String base64Image = base64String(await _controller.finish().toPNG());
-          setState(() {
-            _finished = false;
-            _controller = _newController();
-            _controller = temp;
-          });
-          ServerResult serverResult = await createServerResult(base64Image);
-          // developer.log(serverResult.word['ja']);
-          final df = DateFormat('dd-MM-yyyy hh:mm:ss a');
-          String mean = serverResult.word['en'];
-          HistoryItem item = HistoryItem(
-            name: mean,
-            image: base64Image,
-            created: df.format(DateTime.now()).toString(),
-            lsImage: serverResult.img,
-            lsWord: serverResult.word,
-          );
-          writeHistory(item);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Result(item: item),
-              ));
-        },
-        label: const Text('Search'),
-        icon: const Icon(Icons.search),
-        backgroundColor: Colors.blue,
-      ),
-    );
+        floatingActionButton: Stack(
+          children: <Widget>[
+            Align(
+              alignment: const Alignment(-0.8, 1),
+              child: FloatingActionButton.extended(
+                onPressed: () async {
+                  pickImage();
+                },
+                label: const Text(''),
+                icon: const Icon(Icons.upload_file),
+                backgroundColor: Colors.blue,
+              ),
+            ),
+            Align(
+              alignment: const Alignment(0.1, 1),
+              child: FloatingActionButton.extended(
+                onPressed: () async {
+                  cameraImage();
+                },
+                label: const Text(''),
+                icon: const Icon(Icons.camera_alt),
+                backgroundColor: Colors.blue,
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: FloatingActionButton.extended(
+                onPressed: () async {
+                  PainterController temp = PainterController.clone(_controller);
+                  String base64Image =
+                      base64String(await _controller.finish().toPNG());
+                  setState(() {
+                    _finished = false;
+                    _controller = _newController();
+                    _controller = temp;
+                  });
+                  ServerResult serverResult =
+                      await createServerResult(base64Image);
+                  final df = DateFormat('dd-MM-yyyy hh:mm:ss a');
+                  String mean = serverResult.word['en'];
+                  HistoryItem item = HistoryItem(
+                    name: mean,
+                    image: base64Image,
+                    created: df.format(DateTime.now()).toString(),
+                    lsImage: serverResult.img,
+                    lsWord: serverResult.word,
+                  );
+                  writeHistory(item);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Result(item: item),
+                      ));
+                },
+                label: const Text(''),
+                icon: const Icon(Icons.search),
+                backgroundColor: Colors.blue,
+              ),
+            ),
+          ],
+        ));
   }
 }
 

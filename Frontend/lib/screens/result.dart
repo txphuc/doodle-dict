@@ -55,11 +55,6 @@ class _ResultState extends State<Result> {
             setState(() {
               _displayText = widget.item.lsWord['ru'];
               _language = 'ru';
-              speak(
-                  _displayText == 'Loading...'
-                      ? widget.item.name
-                      : _displayText,
-                  _language);
             })
           },
           label: 'Russian',
@@ -74,11 +69,6 @@ class _ResultState extends State<Result> {
             setState(() {
               _displayText = widget.item.lsWord['fr'];
               _language = 'fr';
-              speak(
-                  _displayText == 'Loading...'
-                      ? widget.item.name
-                      : _displayText,
-                  _language);
             })
           },
           label: 'French',
@@ -93,11 +83,6 @@ class _ResultState extends State<Result> {
             setState(() {
               _displayText = widget.item.lsWord['ja'];
               _language = 'ja';
-              speak(
-                  _displayText == 'Loading...'
-                      ? widget.item.name
-                      : _displayText,
-                  _language);
             })
           },
           label: 'Japanese',
@@ -112,11 +97,6 @@ class _ResultState extends State<Result> {
             setState(() {
               _displayText = widget.item.lsWord['vi'];
               _language = 'vi';
-              speak(
-                  _displayText == 'Loading...'
-                      ? widget.item.name
-                      : _displayText,
-                  _language);
             })
           },
           label: 'Vietnamese',
@@ -131,11 +111,6 @@ class _ResultState extends State<Result> {
             setState(() {
               _displayText = widget.item.lsWord['en'];
               _language = 'en-US';
-              speak(
-                  _displayText == 'Loading...'
-                      ? widget.item.name
-                      : _displayText,
-                  _language); 
             })
           },
           label: 'English',
@@ -149,6 +124,8 @@ class _ResultState extends State<Result> {
 
   @override
   Widget build(BuildContext context) {
+    speak(_displayText == 'Loading...' ? widget.item.name : _displayText,
+        _language);
     return Scaffold(
       backgroundColor: Colors.grey[200],
       floatingActionButton: buildSpeedDial(),
